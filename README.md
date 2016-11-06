@@ -23,8 +23,9 @@ notes on ng2
 
 
 ## Component:
-
-- import { Component, OnInit, Input } from '@angular/core';	// import from the angular/core module the Component and OnInit things and destructure them
+```
+import { Component, OnInit, Input } from '@angular/core';	// import from the angular/core module the Component and OnInit things and destructure them
+```
 
 ```
 @Component({								// declare an annotation call component with the following attributes
@@ -45,7 +46,7 @@ export class MyComponent implements OnInit {  // declare and export a class. the
 ```
 
 ## Template:
-
+```
 <p> {{name}} </p>							// Template tags aka mustache tags are expression that are evaluated using the variable from the component
 
 <div *ngFor="let user of users"> {{user.name}} </div>	// for loop directive that will create the divs multiple times for each user in the users array. will create a user variable per iteration which can be referenced in template tags. make note of the *
@@ -59,7 +60,7 @@ export class MyComponent implements OnInit {  // declare and export a class. the
 
 	<button (click)="runAction(nameField)">a button</button>	//bind the click action event to the runAction method on the class for this component. You need to ensure that the method returns false at the end of it so that the click action doesn't bubble up to parent components
 </form>
-
+```
 
 ## How Angular works
 
