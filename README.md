@@ -2,22 +2,22 @@
 notes on ng2
 
 ## Commands:
-npm install -g typescript					- install typescript globally
-npm install -g angular-cli					- install angular cli globally
-ng 											- start the angular cli program. defaults to output help. if you see an error about watchman use the following command
-brew install watchman						- using brew install watchman so that file can be watched during dev
-ng new <project_name>						- create a new angular 2 project with name project_name in the current directory
-ng serve									- start the built in cli http server and serve the current angular app
-ng generate component <component_name>		- create an angular component with a name. creates html, css, ts and test spec under the src/app directory
-npm install -g tsun							- install the typescript REPL
-tsun										- run the typescript REPL
+- npm install -g typescript						- install typescript globally
+- npm install -g angular-cli					- install angular cli globally
+- ng 											- start the angular cli program. defaults to output help. if you see an error about watchman use the following command
+- brew install watchman							- using brew install watchman so that file can be watched during dev
+- ng new <project_name>							- create a new angular 2 project with name project_name in the current directory
+- ng serve										- start the built in cli http server and serve the current angular app
+- ng generate component <component_name>		- create an angular component with a name. creates html, css, ts and test spec under the src/app directory
+- npm install -g tsun							- install the typescript REPL
+- tsun											- run the typescript REPL
 
 
 ## Files:
-angular-cli.json 							- create by angular cli projects with ng new <name> it contains config for this app and specifies a main file (main.ts)
-main.ts 									- the main entry point for this application. it bootstraps the application by importing and loading the angular module
-app.module.ts								- The file used to bootstrap the application. its whats called the AppModule. it specifies the component that used as the top level component aka AppComponent. it contains the @NgModule annotation that applies to the class right after it. YOU NEED TO DECLARE YOUR OWN COMPONENTS HERE BEFORE YOU CAN USE THEM.
-app.component.ts 							- The component that contains the selector for the main app on the index page.
+- angular-cli.json 								- create by angular cli projects with ng new <name> it contains config for this app and specifies a main file (main.ts)
+- main.ts 										- the main entry point for this application. it bootstraps the application by importing and loading the angular module
+- app.module.ts									- The file used to bootstrap the application. its whats called the AppModule. it specifies the component that used as the top level component aka AppComponent. it contains the @NgModule annotation that applies to the class right after it. YOU NEED TO DECLARE YOUR OWN COMPONENTS HERE BEFORE YOU CAN USE THEM.
+- app.component.ts 								- The component that contains the selector for the main app on the index page.
 
 
 
