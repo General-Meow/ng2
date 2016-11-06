@@ -24,8 +24,9 @@ notes on ng2
 
 ## Component:
 
-import { Component, OnInit, Input } from '@angular/core';	// import from the angular/core module the Component and OnInit things and destructure them
+- import { Component, OnInit, Input } from '@angular/core';	// import from the angular/core module the Component and OnInit things and destructure them
 
+```
 @Component({								// declare an annotation call component with the following attributes
 	selector: 'my-component',				// the css selector used to define this component
 	templateUrl: './my-component.html',		// the template used relative to this file
@@ -41,6 +42,7 @@ export class MyComponent implements OnInit {  // declare and export a class. the
 	ngOnInit()								// implement the OnInit method that runs after initialization of the component
 	runAction(nameField: HTMLInputElement) : boolean 	// the method to run when clicking on the form button, see below form. Actual element is sent, use the value method on it to get the actual value in the input field
 }
+```
 
 ## Template:
 
