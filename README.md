@@ -104,7 +104,7 @@ export class MyComponent{
 - To emit custom events you need to define the event in the output key array in Component
 
 ```
-<button (blah)="myFunc()"></button>
+<button (click)="myFunc()" [class.myClass]="someFunc()"></button>	//myClass class will be applied if someFunc() returns true
 @Component({
 	selector: 'zzz',
 	output: ['blah'],
@@ -133,10 +133,17 @@ export class Outer{
 }
 ```
 
+- When using url's for images don't use the template binding syntax to set the src property. Instead use the [src] input method. This ensures that if angular get loaded after the template gets rendered, you don't get a flash of mustache templating. e.g.
 
+```
+<img [src]='product.imgUrl'/>
+```
 
-
-
+- You can get the index of a *ngFor loop with the following syntax
+*ngFor="let blah of blahz; let i=index"
+- In order to use custom component in angular YOU HAVE TO load it as a declaration in the root module. either that or you need to assign it to a module and import the module
+- Ahead of time compilation is when you compile the application before loading it. By default angular apps bui;lt with angular cli doesn't have this and is built using just in time. its done during bootstraping i.e. platformBrowserDynamic().bootstrapModule(MyModule);
+- To get data from one component to another, it is considered one way data binding to be the best way in angular 2. to do this you emit an event to the top component which will filter down to the rest of the components. This is better than using service singletons as they are much more difficult to do in angular. also in angular 1 they did it with 2 way data binding but that proved to be difficult because it could cause cascading affects.
 
 
 
