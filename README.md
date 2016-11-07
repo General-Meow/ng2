@@ -31,6 +31,7 @@ import { Component, OnInit, Input } from '@angular/core';	// import from the ang
 @Component({								// declare an annotation call component with the following attributes
 	selector: 'my-component',				// the css selector used to define this component
 	templateUrl: './my-component.html',		// the template used relative to this file
+	template: `<xxx></xxx>`					// template can be used instead of templateUrl. use back ticks here to have multiline
 	styleUrls: ['./my-component.css'],		// an array of styles that are applied to this template
 	host: [
 		class: 'row',						// add a class to the host tag. the my-component tag will now have an addition row class applied
@@ -64,8 +65,73 @@ export class MyComponent implements OnInit {  // declare and export a class. the
 
 ## How Angular works
 
+- Angular 2 is all about components. Components belong to modules and these components can be composed of other components
+- Annotations in angular 2 are also known as decorators. They decorate the immediate class with meta data to provide it with additional functionality
+- Templates can use template binding syntax aka mustache brackets {{}} to bind controller properties to the view
+- The binding syntax can be used to evaluate expressions too {{ x + 1 }} or run methods {{ getSomeProperty() }}
+- To input into a component from a view template use square brackets e.g. [ctrlProperty]="outerControllerProperty"
+- To handle output from a component from a view template use round brackets e.g. (click)="ctrlFunction()"
+- To use input and output from components, you could use the @Input() and @Output() annotations and decorate the property or event emitter
+- OR you could use the @Component annotations input and output keys to define an array of properties
+- To use input, the value in the square brackets need to be a property on the controller
+- To use output, you need an event, an event emitter for the event and a function that is called when that event is thrown.
 
+```
+@Component({
+	inputs: ['myShares'],
+	outputs: ['boughtShare']
+})
+export class Shares{
+	myShares: Shares;	
+}
+```
 
+- You can remap inputs if the view properties dont exactly match the controller properties. If you can't change with you can remap by:
+
+```
+<a-component [cannot-change-this]="valueFromOutter"/>
+
+@Component({
+	inputs: ['myInternalValue: cannot-change-this'],			//Remap the cannot-change-this to an internal property of the component
+})
+export class MyComponent{
+	myInternalValue: string;
+}
+//You do not need to do this for all properties if its just the one input, ie. inputs: ['blah', 'blag', 'internal: cantchage']
+```
+
+- You dont have to you basic primitive types for inputs, you can also use complex custom class types too
+- To emit custom events you need to define the event in the output key array in Component
+
+```
+<button (blah)="myFunc()"></button>
+@Component({
+	selector: 'zzz',
+	output: ['blah'],
+})
+export class MyInnerComponent{
+	blahEmitter: EventEmitter<string>;
+	constructor(){
+		this.blahEmitter = new EventEmitter();
+	}
+	myFunc(): void {
+		this.blahEmitter.emit('IM A BIG BLAH');
+	}
+}
+
+@Component({
+	selector: 'zzz',
+	template: `
+	<div>
+		<zzz (blah)='outerFunc($event)'></zzz>  			//this is the event that is thrown from the inner comonent, in this case its the string IM A BIG BLAH
+	</div>`
+})
+export class Outer{
+	outerFunc(event: string){
+		console.log(event);
+	}
+}
+```
 
 
 
