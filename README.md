@@ -2,8 +2,8 @@
 notes on ng2
 
 ## Commands:
-- npm install -g typescript						- install typescript globally
-- npm install -g angular-cli					- install angular cli globally
+- npm install -g typescript	                    - install typescript globally
+- npm install -g angular-cli                    - install angular cli globally
 - ng 											- start the angular cli program. defaults to output help. if you see an error about watchman use the following command
 - brew install watchman							- using brew install watchman so that file can be watched during dev
 - ng new <project_name>							- create a new angular 2 project with name project_name in the current directory
@@ -71,7 +71,7 @@ export class MyComponent implements OnInit {  // declare and export a class. the
 - The binding syntax can be used to evaluate expressions too {{ x + 1 }} or run methods {{ getSomeProperty() }}
 - To input into a component from a view template use square brackets e.g. [ctrlProperty]="outerControllerProperty"
 - To handle output from a component from a view template use round brackets e.g. (click)="ctrlFunction()"
-- To use input and output from components, you could use the @Input() and @Output() annotations and decorate the property or event emitter
+- To use [input] and (output) from components, you could use the @Input() and @Output() annotations and decorate the property or event emitter
 - OR you could use the @Component annotations input and output keys to define an array of properties
 - To use input, the value in the square brackets need to be a property on the controller
 - To use output, you need an event, an event emitter for the event and a function that is called when that event is thrown.
@@ -144,6 +144,88 @@ export class Outer{
 - In order to use custom component in angular YOU HAVE TO load it as a declaration in the root module. either that or you need to assign it to a module and import the module
 - Ahead of time compilation is when you compile the application before loading it. By default angular apps bui;lt with angular cli doesn't have this and is built using just in time. its done during bootstraping i.e. platformBrowserDynamic().bootstrapModule(MyModule);
 - To get data from one component to another, it is considered one way data binding to be the best way in angular 2. to do this you emit an event to the top component which will filter down to the rest of the components. This is better than using service singletons as they are much more difficult to do in angular. also in angular 1 they did it with 2 way data binding but that proved to be difficult because it could cause cascading affects.
+
+
+## Built in angular components and directives
+
+- <div *ngIf='<expression>'> 						- used to display something if the expression holds true. Unlike NG1 there is no ngShow
+- <div [ngSwitch]="myVariable">						- switch case, like java each case will fall through to the next even if they match
+	<div *ngSwitchCase="'A'">its a</div>
+	<div *ngSwitchDefault>default val</div> 		- optional
+  </div>
+- <div [style.background-color]="yellow"/>			- ngStyle used to set tag styles in the form of style.<the css style>='<css value>'
+- <div [ngStyle]="{'font-color':'blue', 'display':'block'}"/>		- multiple style syntax for ngStyle 
+- <div [style.font-size.px]="size"/>				- for styles that are messured in units you can state the unit of messure in the key
+- <div [ngClass]="{bordered: <exp>}"/>				- ngClass used to apply a class if the exp hold true. any classes already applied will still stay applied
+- <div *ngFor="let person of persons; let i=index"/> - iterate this element with all elements in the persons collection. the index bit is optional, creates an index variable
+- <div ngNonBindable/>								- ngNonBindable tells angular not to compile this part of the template
+- 
+
+
+## Forms in angular
+
+- You can represent a form element in the controller as a FormControl type and a group of form elements i.e. the form itself as a FormGroup
+- Both FormControl and FormGroup extend the AbstractControl.
+- They both have methods that will tell you if the form element or form is valid, dirty, errors and get the value
+- Create a form control by: let myInput = new FormControl();
+- To bind this form control to a view element you use the [formControl]='<NAME>' attribute:
+	<input type='text' [formControl]='myInput'/>
+- Create a form group by sending an object of key to FormControls to the constructor:
+	let myWholeForm = new FormGroup({
+		name: new FormControl("paul"),
+		postcode: new FormControl('se14')
+	});
+- Using form groups allows you to check properties of all the controls on the form e.g. myWhole.value //will output { name: 'paul', postcode: 'se14' }
+- To use these types you need to import the FormsModule or ReactiveFormsModule from '@angular/forms' into the root module e.g.
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+@NgModule({
+	imports: [FormsModule, ReactiveFormsModule]
+})
+
+- The FormModule gives us template directives such as 'ngModel' and 'NgForm'
+- The ReactiveFormsModule gives us directives such as 'formControl' and 'ngFormGroup' and many more
+
+<form #f='ngForm' (ngSubmit)='onSubmitFunc(f.value)'>
+	<input type='text' name='sku' ngModel/>
+</form>
+
+- Whenever we import directives and make them available, they will automatically attach to any tags that have the correct selector.
+- In this case the NgForm directive has a component select on 'form' so it will automatically attach to any forms on the page and create its own FormGroup
+- KEEP THIS IN MIND as you may not expect it to bind on your forms
+- The directive gives us the ngForm and ngSubmit
+- In the above form, we create a local variable called 'f' with the #f and binds it with the FormGroup ngForm
+- Also the function onSubmitFunc is executed when the form is submitted. It sends the FormGroup's value output i.e. the object of key to FormControls
+- The input tag has the ngModel directive applied. Applying this directive on a tag means we want to bind this tag to a FormControl that will be autmactically attached for the forms FormGroup with the name 'sku' because of the name attribute.
+- We can apply ngModel in 2 ways. By itself like above without any values, or with values i.e. ngModel='<value>'
+- When you use ngModel without any values, your essentially setting it up with one way databinding. 
+- The class named FormBuilder, does just that, it builds forms. It makes it slightly easier as building them can be tedious
+- You have to inject the FormBuilder into the constructor of the controller if you wish to use it
+- Like FormControl and FormGroup it comes from the @angular/forms package
+- The FormBuilder has a method, control and group
+- group takes an object of a key (string) value (array) pair which make form controls
+formBuilder.group({
+	name: ['paul'], // the arrays can take additional values which will be options but a single value will be used as the default value of the control
+	postcode: ['se14'],
+})
+- form creates a simple form control
+- Creating a set of form controls and groups in the controller wont do anything until you bind it to the view. You do so by using the [formGroup] directive e.g.
+<form [formGroup]='myCreatedFormGroup'/>
+- By doing this, it will stop NgForm from automatically binding to this form as we're manually binding our own form group to this form
+- If we manually bind our own formGroup to the form we'll need to change the binding of the input tag to bind to the controls of that group using [formControl] directive
+<input type='text' [formControl]='myCreatedFormGroup.controls["postcode"]'/>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
