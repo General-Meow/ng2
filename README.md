@@ -198,13 +198,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 - The input tag has the ngModel directive applied. Applying this directive on a tag means we want to bind this tag to a FormControl that will be autmactically attached for the forms FormGroup with the name 'sku' because of the name attribute.
 - We can apply ngModel in 2 ways. By itself like above without any values, or with values i.e. ngModel='<value>'
 - When you use ngModel without any values, your essentially setting it up with one way databinding. 
+- When we use ngModel a formControl is created using the name attribute value as the variable name. In this case sku is used.
+- Using ngModel will bind the new formControl to the formGroup automatically.
 - The class named FormBuilder, does just that, it builds forms. It makes it slightly easier as building them can be tedious
 - You have to inject the FormBuilder into the constructor of the controller if you wish to use it
 - Like FormControl and FormGroup it comes from the @angular/forms package
-- The FormBuilder has a method, control and group
+- The FormBuilder has the methods, control and group
 - group takes an object of a key (string) value (array) pair which make form controls
 formBuilder.group({
-	name: ['paul'], // the arrays can take additional values which will be options but a single value will be used as the default value of the control
+	name: ['paul'], // the arrays can take additional values which will be options like validation rules but a single value will be used as the default value of the control
 	postcode: ['se14'],
 })
 - form creates a simple form control
@@ -213,14 +215,53 @@ formBuilder.group({
 - By doing this, it will stop NgForm from automatically binding to this form as we're manually binding our own form group to this form
 - If we manually bind our own formGroup to the form we'll need to change the binding of the input tag to bind to the controls of that group using [formControl] directive
 <input type='text' [formControl]='myCreatedFormGroup.controls["postcode"]'/>
+- Validation is done via the Validators module.
+- To make a field required, you use the Validators.required method and assign it to a formControl object. You can do this when constructing formContols or with formBuilder
 
+let postcode = new FormControl('postcode', Validators.required);
+//or
+formBuilder.group({
+	'postcode': ['', Validators.required]
+});
 
+- With these formControls defined in the component class now, we need to bind them to the view. there are 2 ways to do so.
+	- assign the formControl to a property of the component class giving access to it easier. Best for easy short forms
+	- access the formControl via the formGroup which will be part of the component property, which makes it more verbose in the view. Best for long complex forms as you dont need to define every form control element on the component class as a property
 
+- As stated earlier, FormControls and FromGroups have a valid method. this method can be used to display messages on the view
+<div *ngIf='!postcode.valid'>My error message here</div>
+<div *ngIf='postcode.hasError("required")'>My error message here</div> //this looks for a specific type of validation error key
 
+<div [class.error]='!postcode.valid && postcode.touched'>
 
+- You can look up form fields on the form group level
+<div *ngIf="formGroup.hasError('valid','postcode')">postcode error message here</div>
 
+- If your using a FormGroup only on the component class and not setting FormControls as properties then you will need to change the view to interrigate the form group instead like the following
+<div *ngIf='!formGroup.control["postcode"].valid'>My error message here</div>
 
+- Custom validation is done by creating a class or a function that takes in a FormControl, does the validation and returns a StringMap<String, boolen> where the string key is the error code and the boolean is true when theres a fault.
 
+function validateName(formControl: FormControl): {[key: string]: boolean} {
+	if(formControl.value == ''){
+		return { required: true };
+	}
+}
+
+- To use a custom validator you can assign it just like the other validators.
+- If you need to use mulitple validators on a form control you can use the method Validators.compose that takes an array to group them
+
+let postcode = new FormControl('', Validators.compose([
+	Validators.required, validateName
+]));
+
+- To watch for changes on a form, we can subscribe functions for event emittors on the formControls or formGroups like so
+
+this.postcodeControl.valueChanges.subscribe(
+	(value: string) => { console.log(value); }
+);
+
+- valueChanges is an emitter that emits strings
 
 
 
