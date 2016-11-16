@@ -196,10 +196,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 - In the above form, we create a local variable called 'f' with the #f and binds it with the FormGroup ngForm
 - Also the function onSubmitFunc is executed when the form is submitted. It sends the FormGroup's value output i.e. the object of key to FormControls
 - The input tag has the ngModel directive applied. Applying this directive on a tag means we want to bind this tag to a FormControl that will be autmactically attached for the forms FormGroup with the name 'sku' because of the name attribute.
-- We can apply ngModel in 2 ways. By itself like above without any values, or with values i.e. ngModel='<value>'
+- We can apply ngModel in 2 ways. By itself like above without any values, or with values i.e. [(ngModel)]='<value>'
 - When you use ngModel without any values, your essentially setting it up with one way databinding. 
 - When we use ngModel a formControl is created using the name attribute value as the variable name. In this case sku is used.
 - Using ngModel will bind the new formControl to the formGroup automatically.
+- When using ngModel with a value property like [(ngModel)]='componentProperty' you are setting it up to be two way databinding
 - The class named FormBuilder, does just that, it builds forms. It makes it slightly easier as building them can be tedious
 - You have to inject the FormBuilder into the constructor of the controller if you wish to use it
 - Like FormControl and FormGroup it comes from the @angular/forms package
@@ -262,6 +263,54 @@ this.postcodeControl.valueChanges.subscribe(
 );
 
 - valueChanges is an emitter that emits strings
+
+## Http stuff
+- Asynchronous http has always been difficult in javascript. The ways in which you do async code is with Callbacks, Promises, Observables.
+- Angular 2 prefers to use observables to do async calls
+- The module to use when using HTTP is the HttpModul from the '@angular/http' package
+- The classes of interest when using HTTP is Http, Response, RequestOptions, Headers
+- You would need to import that module in the root module before you can use it
+
+@NgModule({
+	import : [HttpModule]
+})
+- You have to inject http in order to use it
+- Use the request method to make a http request. It will return an Observable which you can use subscribe on
+- To make a request and process a response you do:
+- Use the subscribe method to define a function that takes a repsonse.
+this.http.request('http://someurl.com').subscribe((response: Response) => { console.log(response); } );
+- http has methods such as get, post, head, delete, patch
+- all of these http methods take an optional parameter of type RequestOptions, these encapsulate, method, headers, body, mode, credentials, cache, url and search
+- Injection can be setup by defining an arrary of objects and setting that into the provider key in the root module e.g.
+
+export var myInjectables: Array<any> = [ 					//You can export functions and variables as well as classes
+	{provide: MY_USERNAME, useValue: 'username'},			//basic types can be injected
+	{provide: MY_PASSWORD, useValue: 'password'},
+	{provide: CartService, useClass: DefaultCartService}	//classes can be injected
+];
+
+impport {myInjectables} from 'some file';
+@NgModule({
+	providers: [ myInjectables ],
+	...
+})
+
+You can inject the values by...
+
+export class Derp{
+	constructor(@Inject('MY_USERNSME') private username: string){}
+}
+
+- You can inject a wrapper representing the component view into the class the type if ElementRef
+
+export class Derp{
+	constructor(private el: ElementRef)
+}
+
+
+
+
+
 
 
 
