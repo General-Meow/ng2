@@ -185,11 +185,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 - The FormModule gives us template directives such as 'ngModel' and 'NgForm'
 - The ReactiveFormsModule gives us directives such as 'formControl' and 'ngFormGroup' and many more
 
+```
+html
 <form #f='ngForm' (ngSubmit)='onSubmitFunc(f.value)'>
 	<input type='text' name='sku' ngModel/>
 </form>
-
+```
 - Whenever we import directives and make them available, they will automatically attach to any tags that have the correct selector.
+- ** There are effectively 2 ways to build forms, use ngForm and ngModel to implicitly (automatically) build forms and controls OR use [formGroup] and [formControl] to manually build and bind forms - the later is usually for complex forms or forms with validation.
 - In this case the NgForm directive has a component select on 'form' so it will automatically attach to any forms on the page and create its own FormGroup
 - KEEP THIS IN MIND as you may not expect it to bind on your forms
 - The directive gives us the ngForm and ngSubmit
@@ -212,7 +215,10 @@ formBuilder.group({
 })
 - form creates a simple form control
 - Creating a set of form controls and groups in the controller wont do anything until you bind it to the view. You do so by using the [formGroup] directive e.g.
+```
+html
 <form [formGroup]='myCreatedFormGroup'/>
+```
 - By doing this, it will stop NgForm from automatically binding to this form as we're manually binding our own form group to this form
 - If we manually bind our own formGroup to the form we'll need to change the binding of the input tag to bind to the controls of that group using [formControl] directive
 <input type='text' [formControl]='myCreatedFormGroup.controls["postcode"]'/>
