@@ -196,7 +196,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 - In the above form, we create a local variable called 'f' with the #f and binds it with the FormGroup ngForm
 - Also the function onSubmitFunc is executed when the form is submitted. It sends the FormGroup's value output i.e. the object of key to FormControls
 - The input tag has the ngModel directive applied. Applying this directive on a tag means we want to bind this tag to a FormControl that will be autmactically attached for the forms FormGroup with the name 'sku' because of the name attribute.
-- We can apply ngModel in 2 ways. By itself like above without any values, or with values i.e. [(ngModel)]='<value>'
+- We can apply ngModel in 2 ways. By itself like above without any values, or with values with two way binding banana syntax i.e. [(ngModel)]='<value>'
 - When you use ngModel without any values, your essentially setting it up with one way databinding. 
 - When we use ngModel a formControl is created using the name attribute value as the variable name. In this case sku is used.
 - Using ngModel will bind the new formControl to the formGroup automatically.
