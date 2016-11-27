@@ -301,9 +301,12 @@ this.postcodeControl.valueChanges.subscribe(
 - The classes of interest when using HTTP is Http, Response, RequestOptions, Headers
 - You would need to import that module in the root module before you can use it
 
+```
 @NgModule({
 	import : [HttpModule]
 })
+```
+
 - You have to inject http in order to use it
 - Use the request method to make a http request. It will return an Observable which you can use subscribe on
 - To make a request and process a response you do:
@@ -313,30 +316,35 @@ this.http.request('http://someurl.com').subscribe((response: Response) => { cons
 - all of these http methods take an optional parameter of type RequestOptions, these encapsulate, method, headers, body, mode, credentials, cache, url and search
 - Injection can be setup by defining an arrary of objects and setting that into the provider key in the root module e.g.
 
+```
 export var myInjectables: Array<any> = [ 					//You can export functions and variables as well as classes
 	{provide: MY_USERNAME, useValue: 'username'},			//basic types can be injected
 	{provide: MY_PASSWORD, useValue: 'password'},
 	{provide: CartService, useClass: DefaultCartService}	//classes can be injected
 ];
 
-impport {myInjectables} from 'some file';
+import {myInjectables} from 'some file';
 @NgModule({
 	providers: [ myInjectables ],
 	...
 })
+```
 
 You can inject the values by...
 
+```
 export class Derp{
 	constructor(@Inject('MY_USERNSME') private username: string){}
 }
+```
 
 - You can inject a wrapper representing the component view into the class the type if ElementRef
 
+```
 export class Derp{
 	constructor(private el: ElementRef)
 }
-
+```
 
 ## Routing
 
@@ -351,7 +359,6 @@ export class Derp{
 
 app.ts 
 ```
-ts
 import { RouterModel, Routes } from '@angular/router';
 import { HomeComponent, ContactUsComponent } from './myComponents';
 
@@ -382,8 +389,6 @@ const routes: Routes = [		//create a const of all routes that the application wi
 ```
 
 ```
-html
-
 <div>
 	<nav>
 		<a [routerLink]="['home']">Home</a>
@@ -399,7 +404,6 @@ html
 ```
 
 ```
-ts
 export class ProductComponent {
 	private productId: string;
 	constructor(private route: ActivatedRoute){
