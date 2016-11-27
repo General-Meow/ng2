@@ -164,6 +164,15 @@ export class Outer{
 
 ## Forms in angular
 
+- Forms in angular can be done in two ways. Template driven or model driven. 
+- Template driven means that you decorate the template so that angular automatically creates forms, form controls, validation etc for you, this uses the NgForm and NgModel directives and other attributes like required and max length. This leaves the backing component pretty much free of any logic. 
+- Use template driven if you are writing a simple form with basic validation or migrating from ng1 to ng2.
+- If you use template driven forms, you can only test them using end to end testing methods
+- You will need to import the FormsModule into the root module if you want to use template driven forms
+- Model driven forms define the form and its controls in the backing component then bind them to the template using [formControl] and [formGroup] input directives.
+- Use model driven if your form is complicated, needs validation code tested using unit tests.  
+- You will need to import the ReactiveFormsModeul into the root module if you want to use model driven forms.
+- You can mix both methods but its best to choose one as it can get messy.
 - You can represent a form element in the controller as a FormControl type and a group of form elements i.e. the form itself as a FormGroup
 - Both FormControl and FormGroup extend the AbstractControl.
 - They both have methods that will tell you if the form element or form is valid, dirty, errors and get the value
@@ -188,7 +197,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 ```
 html
 <form #f='ngForm' (ngSubmit)='onSubmitFunc(f.value)'>
-	<input type='text' name='sku' ngModel/>
+	<input type='text' name='sku' ngModel/> //the name attribute is REQUIRED when using ngModel
 </form>
 ```
 - Whenever we import directives and make them available, they will automatically attach to any tags that have the correct selector.
@@ -199,11 +208,26 @@ html
 - In the above form, we create a local variable called 'f' with the #f and binds it with the FormGroup ngForm
 - Also the function onSubmitFunc is executed when the form is submitted. It sends the FormGroup's value output i.e. the object of key to FormControls
 - The input tag has the ngModel directive applied. Applying this directive on a tag means we want to bind this tag to a FormControl that will be autmactically attached for the forms FormGroup with the name 'sku' because of the name attribute.
-- We can apply ngModel in 2 ways. By itself like above without any values, or with values with two way binding banana syntax i.e. [(ngModel)]='<value>'
+- We can apply ngModel in 2 ways. By itself like above without any values, or with values with two way binding banana syntax i.e. [(ngModel)]='<component property>'
 - When you use ngModel without any values, your essentially setting it up with one way databinding. 
 - When we use ngModel a formControl is created using the name attribute value as the variable name. In this case sku is used.
 - Using ngModel will bind the new formControl to the formGroup automatically.
-- When using ngModel with a value property like [(ngModel)]='componentProperty' you are setting it up to be two way databinding
+- When using ngModel with a value property like [(ngModel)]='componentProperty' you are setting it up to be two way databinding. This means that any changes to the input form will propegate out as an event and any elements using the model will update automatically
+- If you dont want two way data binding then just using [ngModel] is fine, you can still use a form with form initialization as follows:
+
+```
+html
+<input type='text' name='sku' [ngModel]='product.sku'/> 
+```
+
+```
+ts
+@Component(...)
+export class MyProductComponent{
+	public product: Product;
+}
+```
+
 - The class named FormBuilder, does just that, it builds forms. It makes it slightly easier as building them can be tedious
 - You have to inject the FormBuilder into the constructor of the controller if you wish to use it
 - Like FormControl and FormGroup it comes from the @angular/forms package
@@ -314,12 +338,92 @@ export class Derp{
 }
 
 
+## Routing
 
+- Hash based routing is what was done in that past where we would use named tags and links with hashes to move the browser to a certain part of a page without loading a new page.
+- Html 5 provided a way to change browser history, with this it would change the url without a reload of the page. This allowed for moving to a different page without reloading.
+- ng2 defaults to using history push state.
+- not all browsers support html 5 routing 
+- the server needs to support html5 based routing - this means that pages like /contactus will not actually exist, so the server will need to direct to the index page to get the main app before routing to /contactus
+- In  Angular 2 you need to defined paths and map them to components that will handle them
+- In order to use the router module you need to do the following: create some routes in an array of path to component objects, insert that array into the router module when importing the router module. Define a <router-outlet/> as a placeholder element on a page to where component in the router will be displayed. Use the RouterLink directives on links to activate a route.
+- example
 
+app.ts 
+```
+ts
+import { RouterModel, Routes } from '@angular/router';
+import { HomeComponent, ContactUsComponent } from './myComponents';
 
+const routes: Routes = [		//create a const of all routes that the application will map to
+	{ path: '', redirectTo: 'home', pathMatch: 'full', pathMatch: 'full' }, 		//redirect is optional
+	{ path: 'home', component: HomeComponent },
+	{ path: 'contactus', component: ContactUsComponent },
+	{ path: 'contact', redirectTo: 'contactus'}
+	{ path: 'allProducts', component: 'AllProductsComponent' }
+	{ path: 'product/:id', component: 'ProductComponent' } 							//route with request parameter
+	{ path: 'myAccount', component: 'MyAccountComponent', canActivate: [LoggedInGuard] }	//route thats been locked down unless the LoggedInGuard is satisfied
+];
 
+@NgModule({
+	declarations: ['HomeComponent', 'ContactUsComponent'],
+	imports: [ 
+		BrowserModule,
+		RouterModule.forRoot(routes);			//configure the router module with our routes
+	],
+	providers: [
+		{ provide: LocationStrategy, useClass: HashLocationStrategy }, 	//configure the router module to use the hashing strategy
+																		//can be PathLocationStrategy to use html push history
+		{ provide: APP_BASE_HREF, useValue: '/'}						// this tell angular to make all paths base off application context path, this can also be 
+																		// configured using a html tag <base href='/'/> in the main index of your app
+	]
+})
 
+```
 
+```
+html
+
+<div>
+	<nav>
+		<a [routerLink]="['home']">Home</a>
+		<a [routerLink]="['allProducts']">All Products</a>
+		<a [routerLink]="['contactus']">Contact Us</a>
+	</nav>
+
+	<section>
+		<router--outlet></router--outlet>
+	</section>
+</div>
+
+```
+
+```
+ts
+export class ProductComponent {
+	private productId: string;
+	constructor(private route: ActivatedRoute){
+		this.productId = route.params.subscribe(params => { this.prouductId = params['id']; }) //the id key here maps to the paths route request param in the mappings
+	}
+}
+```
+
+- The [routerLink] directive is used to tell angular that these links correspond to links in the router module and that they should not cause a page reload
+- [routerLink] value is an array of strings, the first string is the name of the path of the configured path, there are other parameters that we can send
+- Routes with dynamic parameters can be defined with :<id> in the path
+- To get the parameter from the route, you need to use the ActivatedRoute objects params object. activatedRoute.params.subscribe(params => { params['id'] })
+- Query params, params after the ? in the url can be accessed via the queryParams method on the activated route object. 
+- activatedRoute.queryParams.subscribe(params => { this.sortQuery = params['sortOrder'];});
+- To programatically change page use the Route classes navigate method. route.navigate(['product'])
+- route.navigate(['search'], {queryParams: {query: 'xxxx'}}).then(_ => this.search()) // go to the search page with query params then once success run the search method
+- localStorage is a implicite variable available that allows access to the local storage of the browser
+- localStorage has the methods, getItem, setItem, removeItem
+- You can lock down routes so that users cannot view them unless the class defined in the canActivate are all satisfied
+
+```
+js
+{ path: 'myAccount', component: 'MyAccountComponent', canView: [LoggedInGuard] }
+```
 
 
 
