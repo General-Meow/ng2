@@ -439,13 +439,44 @@ export class ProductComponent {
 - localStorage has the methods, getItem, setItem, removeItem
 - You can lock down routes so that users cannot view them unless the class defined in the canActivate are all satisfied
 
-```
-js
+``` js
 { path: 'myAccount', component: 'MyAccountComponent', canView: [LoggedInGuard] }
 ```
+- The class defined in the canView property needs to implement the CanActivate interface and implement the the canActivate method
 
+```
+import {CanActivate} from '@angular/router';
 
+export class MyAccount implements CanActivate {
+	constructor() {}
+	canActivate(): boolean {
+		//business logic here
+		return true;
+	}
+}
+```
 
+- Nest routes are also possible, to do this multiple </router-outlet> tags are possible
+- To define nested child routes, you need to define them on the route that has the nested routes
 
+```
+let routes: Routes = [
+	{ path: '', component: HomeComponent },
+	{ path: 'users', component: UsersComponent, children: usersRoutes }
+];
+```
 
+```
+const childRoutes: Routes = {
+	{path: '', redirectTo: 'main'},
+	{path: 'main', component: MainComponent},
+	{path: ':id', component: ByIdComponent},		// if no matches are made, this route will be used
+	{path: 'blah' component: BlahComponent}
+}
+```
+
+```
+<a [routerLink]='[./main]'>main</a>				// notice that these router links have a ./ meaning that this link is relative to this components route
+<a [routerLink]='[./blah]'>blah</a>
+```
 
